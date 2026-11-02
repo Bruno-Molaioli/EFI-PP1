@@ -8,6 +8,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [filtro, setFiltro] = useState('Todos')
+  const [busqueda, setBusqueda] = useState('')
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
@@ -58,8 +59,15 @@ export default function Products() {
   }
 
   const productosFiltrados = productos.filter((p) => {
-    if (filtro === 'Todos') return true
-    return p.compatibilidad === filtro
+    // 1. Revisa si cumple el filtro de las pestañas (Autos / Motos / Ambos / Todos)
+    const cumpleCompatibilidad = filtro === 'Todos' || p.compatibilidad === filtro
+    
+    // 2. Revisa si el nombre o la descripción contienen el texto buscado
+    const textoBuscado = busqueda.toLowerCase()
+    const nombreCoincide = p.nombre.toLowerCase().includes(textoBuscado)
+    const descripcionCoincide = p.descripcion && p.descripcion.toLowerCase().includes(textoBuscado)
+
+    return cumpleCompatibilidad && (nombreCoincide || descripcionCoincide)
   })
 
   return (
@@ -88,6 +96,17 @@ export default function Products() {
             </button>
           ))}
         </div>
+      </div>
+
+
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="🔍 Buscar repuesto por nombre o descripción..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-colors shadow-inner"
+        />
       </div>
 
       {loading && (
