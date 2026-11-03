@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import ProductoCard from '../components/ProductoCard'
 import { UserContext } from '../context/UserContext'
+import ModalEditarProducto from '../components/ModalEditarProducto'
 
 export default function Products() {
   const { user } = useContext(UserContext)
@@ -9,6 +10,7 @@ export default function Products() {
   const [error, setError] = useState(null)
   const [filtro, setFiltro] = useState('Todos')
   const [busqueda, setBusqueda] = useState('')
+  const [productoAEditar, setProductoAEditar] = useState(null)
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
@@ -56,6 +58,12 @@ export default function Products() {
     } catch (err) {
       alert('Error al eliminar el repuesto: ' + err.message)
     }
+  }
+      // Se ejecuta cuando el modal guarda con éxito en FastAPI
+    const handleProductoEditado = (productoActualizado) => {
+    setProductos((prev) =>
+      prev.map((p) => (p.id === productoActualizado.id ? productoActualizado : p))
+    )
   }
 
   const productosFiltrados = productos.filter((p) => {
@@ -146,10 +154,17 @@ export default function Products() {
               key={prod.id}
               producto={prod}
               onDelete={user.admin ? handleDelete : null}
+              onEdit={user.admin ? () => setProductoAEditar(prod) : null}
             />
           ))}
         </div>
-      )}
+      )} 
+      {/* Modal de edición */}
+      <ModalEditarProducto
+        producto={productoAEditar}
+        onClose={() => setProductoAEditar(null)}
+        onGuardar={handleProductoEditado}
+      />
     </div>
   )
 }
