@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { CartContext } from '../context/CartContext'
 
-export default function ProductoCard({ producto, onDelete }) {
+export default function ProductoCard({ producto, onDelete, onEdit }) {
   const { addToCart } = useContext(CartContext)
 
   const compatibilidadBadge = {
@@ -63,6 +63,19 @@ export default function ProductoCard({ producto, onDelete }) {
           >
             Ver detalle
           </Link>
+
+          {/* ✏️ Botón para abrir el Modal de edición */}
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              title="Editar repuesto"
+              className="px-3 bg-amber-950/60 hover:bg-amber-800 text-amber-300 border border-amber-800/80 rounded-lg text-xs font-medium transition-colors cursor-pointer flex items-center justify-center"
+            >
+              ✏️
+            </button>
+          )}
+
+          {/* 🗑️ Botón para eliminar repuesto */}
           {onDelete && (
             <button
               onClick={() => onDelete(producto.id)}
