@@ -10,3 +10,7 @@ dist/
 
 # Entorno
 .env
+
+# Documentación interna personal
+COMO_FUNCIONA.md
+*COMO_FUNCIONA.md
