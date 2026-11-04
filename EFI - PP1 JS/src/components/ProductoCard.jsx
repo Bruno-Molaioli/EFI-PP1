@@ -63,19 +63,15 @@ export default function ProductoCard({ producto, onDelete, onEdit }) {
           >
             Ver detalle
           </Link>
-
-          {/* ✏️ Botón para abrir el Modal de edición */}
           {onEdit && (
             <button
-              onClick={onEdit}
+              onClick={() => onEdit(producto)}
               title="Editar repuesto"
-              className="px-3 bg-amber-950/60 hover:bg-amber-800 text-amber-300 border border-amber-800/80 rounded-lg text-xs font-medium transition-colors cursor-pointer flex items-center justify-center"
+              className="px-3 bg-zinc-700 hover:bg-zinc-600 text-zinc-200 border border-zinc-600 rounded-lg text-xs font-medium transition-colors cursor-pointer"
             >
               ✏️
             </button>
           )}
-
-          {/* 🗑️ Botón para eliminar repuesto */}
           {onDelete && (
             <button
               onClick={() => onDelete(producto.id)}

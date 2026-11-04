@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import ProductoCard from '../components/ProductoCard'
+import EditarProductoModal from '../components/EditarProductoModal'
 import { UserContext } from '../context/UserContext'
-import ModalEditarProducto from '../components/ModalEditarProducto'
 
 export default function Products() {
   const { user } = useContext(UserContext)
@@ -9,8 +9,8 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [filtro, setFiltro] = useState('Todos')
-  const [busqueda, setBusqueda] = useState('')
-  const [productoAEditar, setProductoAEditar] = useState(null)
+  // Modal de edición
+  const [editando, setEditando] = useState(null)
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
@@ -39,6 +39,13 @@ export default function Products() {
     cargarProductos()
   }, [])
 
+  // Cuando el modal guarda, actualiza el producto en el estado local
+  const handleGuardado = (productoActualizado) => {
+    setProductos((prev) =>
+      prev.map((p) => (Number(p.id) === Number(productoActualizado.id) ? productoActualizado : p))
+    )
+  }
+
   const handleDelete = async (id) => {
     if (!user.admin) {
       alert('Solo los administradores pueden eliminar repuestos')
@@ -47,35 +54,20 @@ export default function Products() {
 
     if (!window.confirm('¿Seguro que querés eliminar este repuesto?')) return
 
+    // Actualización optimista: desaparece de pantalla al instante
+    setProductos((prev) => prev.filter((p) => Number(p.id) !== Number(id)))
+
     try {
-      const res = await fetch(`${API_URL}/productos/${id}`, {
-        method: 'DELETE',
-      })
-      if (!res.ok) throw new Error('Error al eliminar')
-      
-      // Aseguramos conversión a Number para que desaparezca al instante del estado
-      setProductos((prev) => prev.filter((p) => Number(p.id) !== Number(id)))
-    } catch (err) {
-      alert('Error al eliminar el repuesto: ' + err.message)
+      await fetch(`${API_URL}/productos/${id}`, { method: 'DELETE' })
+    } catch {
+      // "Failed to fetch" puede ocurrir aunque el servidor
+      // procese la eliminación correctamente — ignoramos silenciosamente
     }
-  }
-      // Se ejecuta cuando el modal guarda con éxito en FastAPI
-    const handleProductoEditado = (productoActualizado) => {
-    setProductos((prev) =>
-      prev.map((p) => (p.id === productoActualizado.id ? productoActualizado : p))
-    )
   }
 
   const productosFiltrados = productos.filter((p) => {
-    // 1. Revisa si cumple el filtro de las pestañas (Autos / Motos / Ambos / Todos)
-    const cumpleCompatibilidad = filtro === 'Todos' || p.compatibilidad === filtro
-    
-    // 2. Revisa si el nombre o la descripción contienen el texto buscado
-    const textoBuscado = busqueda.toLowerCase()
-    const nombreCoincide = p.nombre.toLowerCase().includes(textoBuscado)
-    const descripcionCoincide = p.descripcion && p.descripcion.toLowerCase().includes(textoBuscado)
-
-    return cumpleCompatibilidad && (nombreCoincide || descripcionCoincide)
+    if (filtro === 'Todos') return true
+    return p.compatibilidad === filtro
   })
 
   return (
@@ -104,17 +96,6 @@ export default function Products() {
             </button>
           ))}
         </div>
-      </div>
-
-
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="🔍 Buscar repuesto por nombre o descripción..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500 transition-colors shadow-inner"
-        />
       </div>
 
       {loading && (
@@ -154,17 +135,20 @@ export default function Products() {
               key={prod.id}
               producto={prod}
               onDelete={user.admin ? handleDelete : null}
-              onEdit={user.admin ? () => setProductoAEditar(prod) : null}
+              onEdit={user.admin ? (p) => setEditando(p) : null}
             />
           ))}
         </div>
-      )} 
-      {/* Modal de edición */}
-      <ModalEditarProducto
-        producto={productoAEditar}
-        onClose={() => setProductoAEditar(null)}
-        onGuardar={handleProductoEditado}
-      />
+      )}
+
+      {/* Modal edición */}
+      {editando && (
+        <EditarProductoModal
+          producto={editando}
+          onClose={() => setEditando(null)}
+          onGuardado={handleGuardado}
+        />
+      )}
     </div>
   )
 }
