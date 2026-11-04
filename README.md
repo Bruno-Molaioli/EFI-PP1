@@ -1,4 +1,5 @@
 # EFI - Practica Profesionalizante 1
+JavaScript y Python
 
 **Evaluación Final Integradora — Sistema de Gestión y Catálogo de Repuestos para Autos y Motos**
 
