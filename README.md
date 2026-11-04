@@ -1,4 +1,4 @@
-# 🔧 EFI — Programación Profesional 1 (2026)
+# EFI - Practica Profesionalizante 1
 
 **Evaluación Final Integradora — Sistema de Gestión y Catálogo de Repuestos para Autos y Motos**
 
