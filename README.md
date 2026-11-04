@@ -24,13 +24,11 @@ EFI-PP1/
 │   ├── src/             # Routers, Models y Conexión a Base de Datos
 │   ├── alembic/         # Control de migraciones de base de datos
 │   ├── requirements.txt # Dependencias de Python
-│   ├── COMO_FUNCIONA.md # Guía pedagógica del flujo interno de la API
 │   └── README.md        # Documentación específica del backend
 │
 └── EFI - PP1 JS/        # Frontend: Interfaz web (React 19 + Vite + Tailwind CSS)
     ├── src/             # Páginas, Componentes y Context API
     ├── package.json     # Dependencias de JavaScript
-    ├── COMO_FUNCIONA.md # Guía pedagógica del funcionamiento del frontend
     └── README.md        # Documentación específica del frontend
 ```
 
@@ -93,11 +91,3 @@ npm run dev
 |---|---|---|
 | **Backend** | Python 3.12+, FastAPI, SQLModel, Alembic, SQLite, Pydantic | Persistencia de datos, validación de schemas, CORS, paginación y endpoints CRUD para Productos, Categorías y Proveedores. |
 | **Frontend** | React 19, Vite, Tailwind CSS v4, React Router DOM v7, Context API | Interfaz interactiva SPA, catálogo con filtros, carrito de compras con persistencia local, modal de edición con PUT, y control de roles (Admin / Usuario). |
-
----
-
-## 📚 Documentación adicional
-
-Dentro de cada carpeta se incluye un archivo `COMO_FUNCIONA.md` con explicaciones detalladas y esquemas de flujo:
-- [`EFI - PP1 Python/COMO_FUNCIONA.md`](EFI%20-%20PP1%20Python/COMO_FUNCIONA.md) — Explicación paso a paso de routers, dependencias y ciclo de vida de peticiones HTTP en FastAPI.
-- [`EFI - PP1 JS/COMO_FUNCIONA.md`](EFI%20-%20PP1%20JS/COMO_FUNCIONA.md) — Explicación de montaje en React, enrutamiento, contextos globales y llamadas asíncronas con optimismo visual.
