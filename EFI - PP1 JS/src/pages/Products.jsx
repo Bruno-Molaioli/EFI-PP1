@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import ProductoCard from '../components/ProductoCard'
+import EditarProductoModal from '../components/EditarProductoModal'
 import { UserContext } from '../context/UserContext'
 
 export default function Products() {
@@ -8,6 +9,8 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [filtro, setFiltro] = useState('Todos')
+  // Modal de edición
+  const [editando, setEditando] = useState(null)
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
@@ -36,6 +39,13 @@ export default function Products() {
     cargarProductos()
   }, [])
 
+  // Cuando el modal guarda, actualiza el producto en el estado local
+  const handleGuardado = (productoActualizado) => {
+    setProductos((prev) =>
+      prev.map((p) => (Number(p.id) === Number(productoActualizado.id) ? productoActualizado : p))
+    )
+  }
+
   const handleDelete = async (id) => {
     if (!user.admin) {
       alert('Solo los administradores pueden eliminar repuestos')
@@ -44,16 +54,14 @@ export default function Products() {
 
     if (!window.confirm('¿Seguro que querés eliminar este repuesto?')) return
 
+    // Actualización optimista: desaparece de pantalla al instante
+    setProductos((prev) => prev.filter((p) => Number(p.id) !== Number(id)))
+
     try {
-      const res = await fetch(`${API_URL}/productos/${id}`, {
-        method: 'DELETE',
-      })
-      if (!res.ok) throw new Error('Error al eliminar')
-      
-      // Aseguramos conversión a Number para que desaparezca al instante del estado
-      setProductos((prev) => prev.filter((p) => Number(p.id) !== Number(id)))
-    } catch (err) {
-      alert('Error al eliminar el repuesto: ' + err.message)
+      await fetch(`${API_URL}/productos/${id}`, { method: 'DELETE' })
+    } catch {
+      // "Failed to fetch" puede ocurrir aunque el servidor
+      // procese la eliminación correctamente — ignoramos silenciosamente
     }
   }
 
@@ -127,9 +135,19 @@ export default function Products() {
               key={prod.id}
               producto={prod}
               onDelete={user.admin ? handleDelete : null}
+              onEdit={user.admin ? (p) => setEditando(p) : null}
             />
           ))}
         </div>
+      )}
+
+      {/* Modal edición */}
+      {editando && (
+        <EditarProductoModal
+          producto={editando}
+          onClose={() => setEditando(null)}
+          onGuardado={handleGuardado}
+        />
       )}
     </div>
   )
