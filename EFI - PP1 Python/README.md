@@ -8,8 +8,9 @@ API REST para la gestión de repuestos de vehículos automotores, desarrollada c
 
 ## Integrantes
 
-- Nombre y Apellido
-- Nombre y Apellido
+- Bruno Molaioli
+- Mateo Magallanes
+- Danilo Posseto
 
 ---
 
